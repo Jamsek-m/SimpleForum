@@ -1,5 +1,6 @@
 package com.mjamsek.SimpleForum.entity;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -31,6 +32,7 @@ public class User {
 	@Column(name = "password")
 	private String password;
 	
+	//0 - unconfirmed, 1 - active, 2 - unactive
 	@Column(name = "active")
 	private int active;
 	
@@ -69,6 +71,19 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public String getStatusFromActive() {
+		switch(active) {
+		case 0 : 
+			return "Unconfirmed";
+		case 1:
+			return "Active";
+		case 2:
+			return "Disabled";
+		default : 
+			return "No status";
+		}
+	}
 
 	public int getActive() {
 		return active;
@@ -84,6 +99,75 @@ public class User {
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
+	}
+	
+	public boolean hasRole(String search_role) {
+		Iterator<Role> it = this.roles.iterator();
+		while(it.hasNext()) {
+			Role role = it.next();
+			if(role.getRole().equals(search_role)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public String vrniRole() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		if(this.roles != null) {
+			boolean prvi = true;
+			Iterator<Role> it = this.roles.iterator();
+			while(it.hasNext()) {
+				Role role = it.next();
+				if(prvi) {
+					sb.append(role.getRole());
+					prvi = false;
+				} else {
+					sb.append(", ");
+					sb.append(role.getRole());
+				}
+			}
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+	
+	public String translateNepotrjenih(int st) {
+		switch(st) {
+			case 1:
+				return "nepotrjen";
+			case 2:
+				return "nepotrjena";
+			case 3:
+			case 4:
+				return "nepotrjeni";
+			default :
+				return "nepotrjenih";
+		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		if(this.roles != null) {
+			boolean prvi = true;
+			Iterator<Role> it = this.roles.iterator();
+			while(it.hasNext()) {
+				Role role = it.next();
+				if(prvi) {
+					sb.append(role.getRole());
+					prvi = false;
+				} else {
+					sb.append(", ");
+					sb.append(role.getRole());
+				}
+			}
+		}
+		sb.append("]");
+		String roles = sb.toString();
+		return String.format("{ id : %d, username : %s, displayName: %s, password : %s, active: %d, roles: %s }", this.id, this.username, this.displayName, this.password, this.active, roles);
 	}
 	
 }

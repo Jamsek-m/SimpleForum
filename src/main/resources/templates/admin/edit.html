@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Edit user</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script>
+			function checkPassMatch() {
+				var pass1 = document.getElementById("novoGeslo1").value;
+				var pass2 = document.getElementById("novoGeslo2").value;
+				var alert = document.getElementById("alert");
+				if (!pass1 && !pass2) {
+					return true;
+				} else if (!pass1 ^ !pass2) {
+					alert.innerHTML = "Vnesti morate geslo in ga potrditi!";
+					return false;
+				} else if (pass1 === pass2) {
+					return true;
+				} else {
+					alert.innerHTML = "Gesli se ne ujemata!";
+					return false;
+				}
+			}
+			
+			function disableUser(){
+				var id = document.getElementById("id").value;
+				window.location.href="/admin/disable/" + id;
+			}
+			
+			function enableUser(){
+				var id = document.getElementById("id").value;
+				window.location.href="/admin/potrdi/" + id;
+			}
+		</script>
+		<style>
+				div {
+					font-size: 16px;
+				}
+				.debelo {
+					font-weight: bold;
+					color: #005c99;	
+				}
+				.warn {
+					color: #e60000;
+				}
+				body{
+					padding:50px;
+				}
+		</style>
+	</head>
+	<body>
+		<a href="/admin/home">Go back</a><br /><br />
+		<div id="self" th:if="${self}">
+			<form th:action="@{/admin/spremeniSelf}" method="post" onsubmit="return checkPassMatch()" th:object="${userWrapper}">
+				<input type="hidden" th:field="*{id}"/>
+				<div class="form-group">
+					<label for="Name">Prikazno ime:</label>
+					<input type="text" class="form-control" id="Name" name="Name" th:field="*{displayName}"/>
+				</div>
+				<div class="form-group">
+					<label for="Upime">Uporabniško ime:</label>
+					<input type="text" class="form-control" id="Upime" name="Upime" th:field="*{username}"/>
+				</div>
+				<div class="form-group">
+					<label for="Tip">Dovoljenja: </label>
+					 <table>
+					 	<tr>
+					 		<td th:each="role, iter : ${roles}">
+					 			<label th:text="${role.role}"></label>
+					 			<input type="checkbox" th:name="|roles[${iter.index}]|" th:value="${role.id}" th:checked="${user.hasRole(role.role)}" />&#160;
+					 		</td>
+					 	</tr>
+					 </table>
+				</div>
+				<div class="form-group">
+					<label for="novoGeslo1">Novo geslo:</label>
+					<input type="password" id="novoGeslo1" name="novoGeslo1" th:field="*{password}" class="form-control" />
+				</div>
+				<div class="form-group">
+					<label for="novoGeslo2">Potrdi novo geslo:</label>
+					<input type="password" id="novoGeslo2" name="novoGeslo2" class="form-control" />
+				</div>
+				<div id="alert"></div>
+				<button style="margin-top:20px" type="submit" class="btn btn-default">Edit user</button>
+			</form>
+		</div>
+		<div id="user" th:if="${!self}">
+			<form th:action="@{/admin/spremeni}" method="post" onsubmit="return checkPassMatch()" th:object="${userWrapper}">
+				<input type="hidden" th:field="*{id}"/>
+				<div class="form-group">
+					<label for="Name">Prikazno ime:</label>
+					<input type="text" class="form-control" id="Name" name="Name" th:field="*{displayName}"/>
+				</div>
+				<div class="form-group">
+					<label for="Upime">Uporabniško ime:</label>
+					<input type="text" class="form-control" id="Upime" name="Upime" th:field="*{username}"/>
+				</div>
+				<div class="form-group">
+					<label for="Tip">Dovoljenja: </label>
+					 <table>
+					 	<tr>
+					 		<td th:each="role, iter : ${roles}">
+					 			<label th:text="${role.role}"></label>
+					 			<input type="checkbox" th:name="|roles[${iter.index}]|" th:value="${role.id}" th:checked="${user.hasRole(role.role)}" />&#160;
+					 		</td>
+					 	</tr>
+					 </table>
+				</div>
+				<div class="form-group">
+					<label for="novoGeslo1">Novo geslo:</label>
+					<input type="password" id="novoGeslo1" name="novoGeslo1" th:field="*{password}" class="form-control" />
+				</div>
+				<div class="form-group">
+					<label for="novoGeslo2">Potrdi novo geslo:</label>
+					<input type="password" id="novoGeslo2" name="novoGeslo2" class="form-control" />
+				</div>
+				<div id="alert"></div>
+				<button style="margin-top:20px" type="submit" class="btn btn-default">Edit user</button>
+				<button th:if="${user.active == 1}" style="margin-top:20px" type="button" class="btn btn-danger" onclick="disableUser();">Disable user</button>
+				<button th:if="${user.active == 2}" style="margin-top:20px" type="button" class="btn btn-info" onclick="enableUser();">Enable user</button>
+			</form>
+		</div>
+	</body>
+</html>

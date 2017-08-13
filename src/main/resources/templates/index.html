@@ -2,15 +2,101 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<title>Index Page</title>
+	<title>Novice</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$("#toggleView").click(function () {
+				$("#novice").toggle("slow");
+				$("#novaNovica").toggle("slow");
+				$(".toggle:visible").not("#novaNovica").hide();
+			});
+			$("#toggleView2").click(function () {
+				$("#novice").toggle("slow");
+				$("#novaNovica").toggle("slow");
+				$(".toggle:visible").not("#novaNovica").hide();
+			});
+			$("#toggleSearchView").click(function () {
+				$("#novice").toggle("slow");
+				$("#isciNovico").toggle("slow");
+				$(".toggle:visible").not("#isciNovico").hide();
+			});
+			$("#toggleSearchView2").click(function () {
+				$("#novice").toggle("slow");
+				$("#isciNovico").toggle("slow");
+				$(".toggle:visible").not("#isciNovico").hide();
+			});
+			$("#search_btn").click(function(){
+				var query = $("#search_query").val();
+				window.location.href="/isci?query=" + query;
+			});
+			$("#getAllNews_btn").click(function(){
+				window.location.href="/";
+			})
+		});
+	</script>
+	<style>
+		.toggle{
+			display:none;
+		}
+		body {
+			padding:50px;
+		}
+		#novice {
+			margin-top:25px;
+		}
+		#novaNovica {
+			margin-top:25px;
+		}
+		form {
+			width:500px;
+		}
+	</style>
 </head>
 
 <body>
+	<a href="/logout">Logout</a> 
+	<span th:if="${curr_user.hasRole('ADMIN')}">
+		| 
+		<a href="/admin/home">
+			Admin area
+			<span th:if="${unconfirmed_users > 0}" th:text="${'(' + unconfirmed_users + ' ' + curr_user.translateNepotrjenih(unconfirmed_users) + ')'}" style="color:#e60000"></span>
+		</a> 	
+	</span>
+	<br/>
 	
-	<h2>Index Page</h2>
-	<p>Hello World!</p>
+	<div id="novice">
+		<button class="btn btn-default" th:if="${curr_user.hasRole('ADMIN') || curr_user.hasRole('MOD')}" id="toggleView">Dodaj novico</button>
+		<button class="btn btn-default" id="toggleSearchView">Išči novice</button>
+		<button class="btn btn-info" th:if="${param.query}" id="getAllNews_btn">Vse novice</button>
+		<div th:each="item,iter : ${seznamNovic}">
+			<h3 th:text="${(iter.index + 1) + '. novica'}"></h3>
+			<p th:text="${item.content}"></p>
+			<p th:text="'Avtor: ' + ${item.author.displayName}"></p>
+		</div>
+	</div>
 	
-	<a href="/admin/home">Admin page</a> <br/>
-	<a href="/logout">Logout</a>
+	<div id="novaNovica" class="toggle">
+		<button class="btn btn-danger" id="toggleView2">Prekliči</button>
+		<form method="POST" action="#" th:action="@{/addNovica}" th:object="${newForumPost}">
+			<div class="form-group">
+				<label for="news">Novica:</label>
+				<textarea class="form-control" rows="5" th:field="*{content}" id="content" required></textarea>
+			</div>
+			<button type="submit" class="btn btn-default">Objavi</button>
+			<span th:utext="${addNewForumPostMessage}"></span>
+		</form>
+	</div>
+	
+	<div id="isciNovico" class="toggle">
+		<div class="form-group" style="margin-top:20px">
+			<input class="form-control" style="width:200px" type="text" placeholder="Search phrase" id="search_query"/> 
+		</div>
+		<button class="btn btn-info" id="search_btn">Išči</button>
+		<button class="btn btn-danger" id="toggleSearchView2">Prekliči</button>
+	</div>
 </body>
 </html>

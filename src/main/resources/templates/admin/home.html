@@ -1,14 +1,119 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-	<title>Admin Homepage</title>
-</head>
-
-<body>
+	<head>
+		<title>Administration Panel</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<style>
+			tr:hover {
+				background-color: #f5f5f5
+				}
+			th, td {
+				border-bottom: 1px solid #ddd;
+				}
+				td {
+					width:200px;
+					font-size: 16px;
+				}
+				tr {
+					height:30px;
+				}
+				div {
+					font-size: 16px;
+				}
+				.debelo {
+					font-weight: bold;
+					color: #005c99;	
+				}
+				.warn {
+					color: #e60000;
+				}
+				body{
+					padding:50px;
+				}
+				#nepotrjeni {
+					padding-top:25px;
+				}
+				#trenutni #vsi {
+					padding-top:20px;
+				}
+		</style>
+	</head>
+	<body>
+		<a href="/">Go back</a><br /><br />
+		<h2>Administration Panel</h2>
+		<div id="nepotrjeni" th:if="${seznamNepot.size() > 0}">
+			<h4 class="warn debelo"><span class="glyphicon glyphicon-exclamation-sign"></span> Nepotrjeni uporabniki:</h4>
+			<table>
+				<tr>
+					<th>Uporabniško ime</th>
+					<th>Prikazno ime</th>
+					<th>Status</th>
+					<th></th>
+				</tr>
+				<tr th:each="nepotrjeni : ${seznamNepot}">
+					<td th:text="${nepotrjeni.username}"></td>
+					<td th:text="${nepotrjeni.displayName}"></td>
+					<td th:text="${nepotrjeni.getStatusFromActive()}">
+					<th><a th:href="@{'/admin/potrdi/' + ${nepotrjeni.id} }" onclick="return confirm('Are you sure?')">Potrdi uporabnika</a>
+				</tr>
+			</table>
+		</div>
+		<div id="trenutni">
+			<h4 class="debelo"><span class="glyphicon glyphicon-user"></span> User account:</h4>
+			<table>
+				<tr>
+					<th>Vloge</th>
+					<th>Uporabnik</th>
+					<th>Status</th>
+					<th></th>
+				</tr>
+				<tr>
+					<td th:text="${curr_user.vrniRole()}"></td>
+					<td th:text="${curr_user.displayName}"></td>
+					<td th:text="${curr_user.getStatusFromActive()}">
+					<td><a href="/admin/spremeniSelf">Uredi</a></td>
+				</tr>
+			</table>
+		</div>
+		<div id="vsi">
+			<h4>Other accounts:</h4>
+			<table>
+				<tr>
+					<th>Vloge</th>
+					<th>Uporabnik</th>
+					<th>Status</th>
+					<th></th>
+				</tr>
+				<tr th:each="upor : ${seznamUpor}" th:if="${curr_user.id != upor.id}">
+					<td th:text="${upor.vrniRole()}"></td>
+					<td th:text="${upor.displayName}"></td>
+					<td th:text="${upor.getStatusFromActive()}">
+					<td><a th:href="@{'/admin/spremeni/' + ${upor.id} }">Uredi</a></td>
+				</tr>
+			</table>
+		</div>
 	
-	<h2>Admin Page</h2>
-	<p>Hello Admin: <span th:utext="${username}"></span>!</p>
-	<a href="/logout">Logout</a>
-</body>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+	</body>
+	
+	
 </html>
